@@ -15,7 +15,9 @@ public class Sessao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private LocalTime horario;
+	@ManyToOne
 	private Sala sala;
+	@ManyToOne
 	private Filme filme;
 
 	public Sessao(LocalTime horario, Filme filme, Sala sala) {
