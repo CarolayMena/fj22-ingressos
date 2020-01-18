@@ -149,5 +149,17 @@
             </plugin>
         </plugins>
     </build>
+    
+    <!--adicionado no exercicio 2.2-->
+    <developers>
+    
+    	<developer>
+    	 	<name>John Doe</name>
+    	 	<email>jdoe@example.com</email>
+     
+    	</developer>
+    
+    </developers>
+    
 
 </project>
