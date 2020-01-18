@@ -1,6 +1,7 @@
 package br.com.caelum.ingresso.controller;
 
 import br.com.caelum.ingresso.dao.SalaDao;
+import br.com.caelum.ingresso.dao.SessaoDao;
 import br.com.caelum.ingresso.model.Sala;
 import br.com.caelum.ingresso.model.form.SalaForm;
 
@@ -22,6 +23,10 @@ public class SalaController {
 
     @Autowired
     private SalaDao salaDao;
+    
+    //para acessar o banco de dados- exercicio 2.6 ponto 6 -pagina 44
+    @Autowired
+    private SessaoDao sessaoDao;
 
 
     @GetMapping({"/admin/sala", "/admin/sala/{id}"})
@@ -59,13 +64,18 @@ public class SalaController {
     }
 
 
+  //codigo alterado- exercicio 2.6 ponto 6 -pagina 44
     @GetMapping("/admin/sala/{id}/sessoes")
     public ModelAndView listaSessoes(@PathVariable("id") Integer id) {
 
         Sala sala = salaDao.findOne(id);
 
         ModelAndView view = new ModelAndView("sessao/lista");
+        
         view.addObject("sala", sala);
+        
+        //codigo adicionado para disponibilizar as sessões na página de listagem
+        view.addObject("sessoes", sessaoDao.buscaSessoesDaSala(sala));
 
         return view;
     }
@@ -88,4 +98,8 @@ public class SalaController {
     public void delete(@PathVariable("id") Integer id){
         salaDao.delete(id);
     }
+    
+    
+  
+    
 }
