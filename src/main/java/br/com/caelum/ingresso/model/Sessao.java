@@ -21,10 +21,10 @@ public class Sessao {
 	private Filme filme;
 
 	public Sessao(LocalTime horario, Filme filme, Sala sala) {
-	this.setHorario(horario);
-	this.setFilme(filme);
-	this.setSala(sala);
-	
+		this.setHorario(horario);
+		this.setFilme(filme);
+		this.setSala(sala);
+
 	}
 
 	public Integer getId() {
@@ -52,7 +52,6 @@ public class Sessao {
 		this.sala = sala;
 	}
 
-	
 	@ManyToOne
 	public Filme getFilme() {
 		return filme;
@@ -61,10 +60,10 @@ public class Sessao {
 	public void setFilme(Filme filme) {
 		this.filme = filme;
 	}
-	
+
 	/**
-	* @deprecated hibernate only
-	*/
+	 * @deprecated hibernate only
+	 */
 	public Sessao() {
 	}
 }
