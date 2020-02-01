@@ -1,6 +1,7 @@
 package br.com.caelum.ingresso.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,8 +18,12 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.caelum.ingresso.dao.FilmeDao;
 import br.com.caelum.ingresso.dao.SalaDao;
 import br.com.caelum.ingresso.dao.SessaoDao;
+import br.com.caelum.ingresso.model.Carrinho;
+import br.com.caelum.ingresso.model.ImagemCapa;
 import br.com.caelum.ingresso.model.Sessao;
+import br.com.caelum.ingresso.model.TipoDeIngresso;
 import br.com.caelum.ingresso.model.form.SessaoForm;
+import br.com.caelum.ingresso.rest.OmdbClient;
 import br.com.caelum.ingresso.validacao.GerenciadorDeSessao;
 
 @Controller
@@ -28,11 +34,18 @@ public class SessaoController {
 
 	@Autowired
 	private FilmeDao filmeDao;
+	
+	@Autowired
+	private OmdbClient client;
 
 	// incluindo no exer 2.6
 	// persistirá uma sessão no banco de dados
 	@Autowired
 	private SessaoDao sessaoDao;
+	
+	//exercicio 6.2
+	@Autowired
+	private Carrinho carrinho;
 
 	@GetMapping("/admin/sessao")
 	public ModelAndView form(@RequestParam("salaId") Integer salaId, SessaoForm form) {
@@ -57,7 +70,8 @@ public class SessaoController {
 			return form(form.getSalaId(), form);
 		Sessao sessao = form.toSessao(salaDao, filmeDao);
 
-		// codigo inserido exercicio 2.9 pagina 51 - ponto 3 -validar as sessões antes de serem inseridas
+		// codigo inserido exercicio 2.9 pagina 51 - ponto 3 -validar as sessões antes
+		// de serem inseridas
 		List<Sessao> sessoesDaSala = sessaoDao.buscaSessoesDaSala(sessao.getSala());
 
 		GerenciadorDeSessao gerenciador = new GerenciadorDeSessao(sessoesDaSala);
@@ -67,4 +81,24 @@ public class SessaoController {
 		}
 		return form(form.getSalaId(), form);
 	}
+
+	// exercicio 5.2 e exercicio 6.2
+	@GetMapping("/sessao/{id}/lugares")
+	public ModelAndView lugaresNaSessao(@PathVariable("id") Integer sessaoId){
+	ModelAndView modelAndView = new ModelAndView("sessao/lugares");
+	Sessao sessao = sessaoDao.findOne(sessaoId);
+	
+	Optional<ImagemCapa> imagemCapa = client.request(sessao.getFilme(), ImagemCapa.class);
+	
+	modelAndView.addObject("sessao", sessao);
+	
+	modelAndView.addObject("carrinho", carrinho);
+	
+	modelAndView.addObject("imagemCapa", imagemCapa.orElse(new ImagemCapa()));
+	modelAndView.addObject("tiposDeIngressos", TipoDeIngresso.values());
+	
+	return modelAndView;
+	}
+	
+	
 }

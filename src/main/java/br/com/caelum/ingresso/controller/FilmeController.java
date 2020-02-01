@@ -18,8 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import br.com.caelum.ingresso.dao.FilmeDao;
 import br.com.caelum.ingresso.dao.SessaoDao;
+import br.com.caelum.ingresso.model.DetalhesDoFilme;
 import br.com.caelum.ingresso.model.Filme;
 import br.com.caelum.ingresso.model.Sessao;
+import br.com.caelum.ingresso.rest.OmdbClient;
 
 /**
  * Created by nando on 03/03/17.
@@ -30,13 +32,16 @@ public class FilmeController {
 	@Autowired
 	private FilmeDao filmeDao;
 
-	//exercicio 4.2
+	// exercicio 4.2
 	//
 	@Autowired
 	private SessaoDao sessaoDao;
-	
-	
-	//exercicio 4.2
+
+	// exercicio 4.4
+	@Autowired
+	private OmdbClient client;
+
+	// exercicio 4.2
 	@GetMapping("/filme/em-cartaz")
 	public ModelAndView emCartaz() {
 		ModelAndView modelAndView = new ModelAndView("filme/em-cartaz");
@@ -44,10 +49,6 @@ public class FilmeController {
 
 		return modelAndView;
 	}
-	
-	
-		
-	
 
 	@GetMapping({ "/admin/filme", "/admin/filme/{id}" })
 	public ModelAndView form(@PathVariable("id") Optional<Integer> id, Filme filme) {
@@ -77,20 +78,22 @@ public class FilmeController {
 
 		return view;
 	}
-	
-	//exercicio 4.2
+
+	// exercicio 4.2 , alterado no exercicio 4.4 e 5.2
 	@GetMapping("/filme/{id}/detalhe")
-	public ModelAndView detalhes(@PathVariable("id") Integer id){
-	ModelAndView modelAndView = new ModelAndView("/filme/detalhe");
-	
-	Filme filme = filmeDao.findOne(id);
-	List<Sessao> sessoes = sessaoDao.buscaSessoesDoFilme(filme);
-	
-	modelAndView.addObject("sessoes", sessoes);
-	return modelAndView;
+	public ModelAndView detalhes(@PathVariable("id") Integer id) {
+		ModelAndView modelAndView = new ModelAndView("/filme/detalhe");
+
+		Filme filme = filmeDao.findOne(id);
+		List<Sessao> sessoes = sessaoDao.buscaSessoesDoFilme(filme);
+
+		Optional<DetalhesDoFilme> detalhesDoFilme = client.request(filme, DetalhesDoFilme.class);
+
+		modelAndView.addObject("sessoes", sessoes);
+		modelAndView.addObject("detalhes", detalhesDoFilme.orElse(new DetalhesDoFilme()));
+
+		return modelAndView;
 	}
-	
-	
 
 	@GetMapping(value = "/admin/filmes")
 	public ModelAndView lista() {

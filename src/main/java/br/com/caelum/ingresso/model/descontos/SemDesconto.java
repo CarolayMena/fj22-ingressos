@@ -9,6 +9,12 @@ public class SemDesconto implements Desconto {
 		// TODO Auto-generated method stub
 		return precoOriginal;
 	}
+
+	@Override
+	public String getDescricao() {
+		// TODO Auto-generated method stub
+		return "Normal";
+	}
 	
 	
 	
